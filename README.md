@@ -36,34 +36,43 @@ An end-to-end automated Python ETL pipeline that fetches real-time cryptocurrenc
 ├── requirements.txt  # Project dependencies
 ├── .env              # Environment secrets (ignored by Git)
 └── .gitignore        # Git exclusion rules
-🚀 Quick Start
-1. Clone the Repository & Set Up Virtual Environment
-Bash
+```
+## 🚀 Quick Start
+* **1. Clone the Repository & Set Up Virtual Environment**
+```Bash
 git clone [https://github.com/your-username/crypto-reporter-bot.git](https://github.com/your-username/crypto-reporter-bot.git)
 cd crypto-reporter-bot
 
 # Create and activate virtual environment
 python3 -m venv .venv
-source .venv/bin/activate  # macOS / Linux
-# .venv\Scripts\activate   # Windows
-2. Install Dependencies
-Bash
+```
+```macOS/Linux
+source .venv/bin/activate
+```
+```Windows
+# .venv\Scripts\activate 
+```
+* **2. Install Dependencies**
+```Bash
 pip install -r requirements.txt
-3. Configure Environment Variables
+```
+* **3. Configure Environment Variables**
 Create a .env file in the root directory and populate it with your credentials:
 
-Code fragment:
+```Code fragment:
 
 BOT_TOKEN=your_telegram_bot_token_here
 TELEGRAM_CHAT_ID=your_telegram_chat_id_here
 USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
 DB_NAME=crypto_data.db
-4. Run the Pipeline
-Bash
+```
+* **4. Run the Pipeline**
+```Bash
 python main.py
-📬 Output Preview
+```
+## 📬 Output Preview
 Upon execution, the script completes the pipeline and dispatches a Telegram notification structured as follows:
-
+```
 🚀 Cryptocurrency Market Update
 
 • Bitcoin: $65,420 (📈 2.34%)
@@ -71,3 +80,4 @@ Upon execution, the script completes the pipeline and dispatches a Telegram noti
 • Solana: $145.2 (📈 5.12%)
 
 📎 Attached: crypto_report.csv
+```
