@@ -48,7 +48,7 @@ python3 -m venv .venv
 
 source .venv/bin/activate #macOS/Linux
 
- .venv\Scripts\activate #Windows
+.venv\Scripts\activate #Windows
 ```
 * **2. Install Dependencies**
 ```Bash
