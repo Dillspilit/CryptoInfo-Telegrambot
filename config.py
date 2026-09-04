@@ -1,15 +1,15 @@
 import os
 from dotenv import load_dotenv
 
-# Загружаем переменные из файла .env в окружение
+# Load environment variables from .env file
 load_dotenv()
 
-# Считываем переменные
+# Read environment variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-USER_AGENT = os.getenv("USER_AGENT")
+USER_AGENT = os.getenv("USER_AGENT", "Mozilla/5.0")
 DB_NAME = os.getenv("DB_NAME", "crypto_data.db")
 
-# Настройки источника данных (для примера возьмем бесплатный API или парсинг)
-# Будем собирать данные по курсам криптовалют с публичного API CoinGecko
+# Data source settings (using CoinGecko public API as an example)
+# Fetching crypto rate data from public API
 DATA_SOURCE_URL = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true"

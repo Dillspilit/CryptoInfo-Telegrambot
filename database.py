@@ -3,7 +3,7 @@ from config import DB_NAME
 
 
 def init_db():
-    """Создает таблицу для хранения цен, если она еще не существует."""
+    """Creates table for storing prices if it does not exist yet."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
@@ -25,9 +25,9 @@ def init_db():
 
 
 def save_crypto_data(data_list: list[dict]):
-    """Сохраняет список полученных криптовалют в базу данных.
+    """Saves a list of fetched cryptocurrency entries to the database.
 
-    Игнорирует записи, если такая комбинация (coin, timestamp) уже есть.
+    Ignores entries if the (coin, timestamp) combination already exists.
     """
     if not data_list:
         return
@@ -38,7 +38,7 @@ def save_crypto_data(data_list: list[dict]):
     inserted_count = 0
     for item in data_list:
         try:
-            # Используем INSERT OR IGNORE, чтобы не дублировать записи
+            # Use INSERT OR IGNORE to prevent duplicate entries
             cursor.execute(
                 """
                 INSERT OR IGNORE INTO crypto_rates (coin, price_usd, change_24h, timestamp)
@@ -54,22 +54,19 @@ def save_crypto_data(data_list: list[dict]):
             if cursor.rowcount > 0:
                 inserted_count += 1
         except sqlite3.Error as e:
-            print(f"[ERROR] Ошибка записи в БД: {e}")
+            print(f"[ERROR] Database write error: {e}")
 
     conn.commit()
     conn.close()
-    print(f"[DB] Успешно добавлено новых записей: {inserted_count}")
+    print(f"[DB] Successfully added new records: {inserted_count}")
 
 
 def get_latest_analytics() -> list[tuple]:
-    """SQL-запрос для аналитики: возвращает последние сохраненные курсы по
-
-    каждой монете.
-    """
+    """SQL query for analytics: returns the latest saved rates for each coin."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Извлекаем самые свежие данные по каждой криптовалюте
+    # Extract the most recent data for each cryptocurrency
     query = """
         SELECT coin, price_usd, change_24h, MAX(timestamp) as last_update
         FROM crypto_rates
@@ -84,23 +81,23 @@ def get_latest_analytics() -> list[tuple]:
     return rows
 
 
-# Проверка работы модуля
+# Module test
 if __name__ == "__main__":
     from scraper import fetch_crypto_prices
 
-    print("Инициализация базы данных...")
+    print("Initializing database...")
     init_db()
 
-    print("Сбор данных...")
+    print("Fetching data...")
     crypto_data = fetch_crypto_prices()
 
     if crypto_data:
-        print("Сохраняем данные в БД...")
+        print("Saving data to DB...")
         save_crypto_data(crypto_data)
 
-        print("\nВыгрузка аналитики из БД:")
+        print("\nExporting analytics from DB:")
         analytics = get_latest_analytics()
         for row in analytics:
             print(
-                f"Монета: {row[0]} | Цена: ${row[1]} | Изменение за 24ч: {row[2]}% | Время: {row[3]}"
+                f"Coin: {row[0]} | Price: ${row[1]} | 24h Change: {row[2]}% | Timestamp: {row[3]}"
             )

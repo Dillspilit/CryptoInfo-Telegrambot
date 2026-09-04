@@ -7,12 +7,12 @@ from scraper import fetch_crypto_prices
 
 
 def send_telegram_notification(text: str, file_path: str = None) -> bool:
-    """Отправляет текстовое сообщение и прикрепленный файл в Telegram через Bot API."""
+    """Sends a text message and attached file to Telegram via the Bot API."""
     if not BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("[TELEGRAM] Ошибка: BOT_TOKEN или TELEGRAM_CHAT_ID не заданы в .env")
+        print("[TELEGRAM] Error: BOT_TOKEN or TELEGRAM_CHAT_ID is not set in .env")
         return False
 
-    # 1. Отправляем текстовое сообщение
+    # 1. Send text message
     msg_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
@@ -24,7 +24,7 @@ def send_telegram_notification(text: str, file_path: str = None) -> bool:
         res_msg = requests.post(msg_url, json=payload, timeout=10)
         res_msg.raise_for_status()
 
-        # 2. Если передан файл — отправляем его пользователю
+        # 2. If a file path is provided, send it to the user
         if file_path and os.path.exists(file_path):
             doc_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
             with open(file_path, "rb") as file:
@@ -33,49 +33,49 @@ def send_telegram_notification(text: str, file_path: str = None) -> bool:
                 res_doc = requests.post(doc_url, data=data, files=files, timeout=30)
                 res_doc.raise_for_status()
 
-        print("[TELEGRAM] Уведомление и отчет успешно отправлены!")
+        print("[TELEGRAM] Notification and report sent successfully!")
         return True
 
     except requests.exceptions.RequestException as e:
-        print(f"[TELEGRAM] Ошибка отправки в Telegram: {e}")
+        print(f"[TELEGRAM] Error sending message to Telegram: {e}")
         return False
 
 
 def run_pipeline():
-    """Главная функция-пайплайн: Сбор -> Сохранение -> Аналитика -> Экспорт -> Уведомление."""
-    print("=== Запуск скрипта автоматизации ===")
+    """Main pipeline function: Fetch -> Save -> Analytics -> Export -> Notify."""
+    print("=== Launching automation script ===")
 
-    # 1. Инициализируем БД
+    # 1. Initialize DB
     init_db()
 
-    # 2. Собираем данные
-    print("1/4 Сбор данных с API...")
+    # 2. Fetch data
+    print("1/4 Fetching data from API...")
     crypto_data = fetch_crypto_prices()
     if not crypto_data:
-        print("[MAIN] Завершение: не удалось получить данные.")
+        print("[MAIN] Termination: failed to fetch data.")
         return
 
-    # 3. Сохраняем в БД
-    print("2/4 Сохранение в SQLite...")
+    # 3. Save to DB
+    print("2/4 Saving to SQLite...")
     save_crypto_data(crypto_data)
 
-    # 4. Формируем отчет из базы
-    print("3/4 Формирование CSV отчета via Pandas...")
+    # 4. Generate report from database
+    print("3/4 Generating CSV report via Pandas...")
     report_file = export_crypto_report()
 
-    # 5. Готовим текст сообщения для Telegram
+    # 5. Prepare Telegram message text
     analytics = get_latest_analytics()
-    message = "🚀 *Актуальный отчет по криптовалютам*\n\n"
+    message = "🚀 *Latest Cryptocurrency Report*\n\n"
     for row in analytics:
         coin, price, change, _ = row
         trend = "📈" if change >= 0 else "📉"
         message += f"• *{coin}*: ${price:,} ({trend} {change}%)\n"
 
-    # 6. Отправляем в Telegram
-    print("4/4 Отправка результатов в Telegram...")
+    # 6. Send to Telegram
+    print("4/4 Sending results to Telegram...")
     send_telegram_notification(text=message, file_path=report_file)
 
-    print("=== Работа скрипта успешно завершена! ===")
+    print("=== Script completed successfully! ===")
 
 
 if __name__ == "__main__":

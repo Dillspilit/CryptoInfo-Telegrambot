@@ -4,15 +4,15 @@ from config import DB_NAME
 
 
 def export_crypto_report(output_file: str = "crypto_report.csv") -> str | None:
-    """Выгружает данные из SQLite, формирует аналитический отчет
+    """Exports data from SQLite, generates an analytical report,
 
-    и сохраняет его в CSV-файл. Возвращает путь к созданному файлу.
+    and saves it to a CSV file. Returns the path to the created file.
     """
     try:
-        # 1. Подключаемся к базе данных
+        # 1. Connect to database
         conn = sqlite3.connect(DB_NAME)
 
-        # 2. Читаем данные напрямую из SQL в Pandas DataFrame
+        # 2. Read data directly from SQL to Pandas DataFrame
         query = """
             SELECT coin, price_usd, change_24h, timestamp
             FROM crypto_rates
@@ -22,11 +22,11 @@ def export_crypto_report(output_file: str = "crypto_report.csv") -> str | None:
         conn.close()
 
         if df.empty:
-            print("[EXPORTER] База данных пуста. Отчет не сформирован.")
+            print("[EXPORTER] Database is empty. Report not generated.")
             return None
 
-        # 3. Дополнительная аналитика через Pandas
-        # Рассчитываем агрегированную статистику по каждой монете
+        # 3. Additional analytics via Pandas
+        # Calculate summary statistics for each coin
         summary = (
             df.groupby("coin")
             .agg(
@@ -39,28 +39,28 @@ def export_crypto_report(output_file: str = "crypto_report.csv") -> str | None:
             .reset_index()
         )
 
-        # Округляем значения для красоты
+        # Round values for cleaner presentation
         summary["avg_price"] = summary["avg_price"].round(2)
 
-        # 4. Сохраняем сводный отчет в CSV
+        # 4. Save summary report to CSV
         summary.to_csv(output_file, index=False, encoding="utf-8-sig")
         print(
-            f"[EXPORTER] Отчет успешно сформирован и сохранен в: {output_file}"
+            f"[EXPORTER] Report generated successfully and saved to: {output_file}"
         )
 
         return output_file
 
     except Exception as e:
-        print(f"[EXPORTER] Ошибка при формировании отчета: {e}")
+        print(f"[EXPORTER] Error generating report: {e}")
         return None
 
 
-# Проверка работы модуля
+# Module test
 if __name__ == "__main__":
-    print("Формируем отчет из базы данных...")
+    print("Generating report from database...")
     report_file = export_crypto_report()
     if report_file:
-        # Выведем то, что получилось, прямо в консоль для проверки
+        # Preview the resulting file in console
         df_preview = pd.read_csv(report_file)
-        print("\nСодержимое сформированного отчета:")
+        print("\nGenerated report preview:")
         print(df_preview)
