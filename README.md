@@ -45,12 +45,10 @@ cd crypto-reporter-bot
 
 # Create and activate virtual environment
 python3 -m venv .venv
-```
-```macOS/Linux
-source .venv/bin/activate
-```
-```Windows
-# .venv\Scripts\activate 
+
+source .venv/bin/activate #macOS/Linux
+
+ .venv\Scripts\activate #Windows
 ```
 * **2. Install Dependencies**
 ```Bash
@@ -59,8 +57,8 @@ pip install -r requirements.txt
 * **3. Configure Environment Variables**
 Create a .env file in the root directory and populate it with your credentials:
 
-```Code fragment:
-
+Code fragment:
+```Python
 BOT_TOKEN=your_telegram_bot_token_here
 TELEGRAM_CHAT_ID=your_telegram_chat_id_here
 USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
